@@ -5,10 +5,8 @@ A CMakeLists generator
 ### Using npm
 `npm install -g metro-build`
 ### Using sourcecode
-`git clone https://github.com/rrrfffrrr/metro-build.git`
-
-`cd metro-build`
-
+`git clone https://github.com/rrrfffrrr/metro-build.git`  
+`cd metro-build`  
 `npm install -g .`
 
 # Commands
