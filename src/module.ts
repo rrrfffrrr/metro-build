@@ -1,13 +1,3 @@
-export interface SegTool {
-    programs: string[],
-    project: string,
-    package: string,
-    cmake: {
-        minVersion: string,
-        maxVersion?: string
-    }
-}
-
 export const ProgramTypes = [ 'executable', 'library' ]
 export type ProgramTypes = 'executable' | 'library'
 export interface IProgram {
