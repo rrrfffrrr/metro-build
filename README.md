@@ -25,8 +25,7 @@ Options:
   -h, --help                     display help for command
 ```
 ### generate
-Parse MetroBuild.json and dispatch cmake commands to CMakeLists.txt
-
+Parse MetroBuild.json and dispatch cmake commands to CMakeLists.txt  
 Commands will be pasted inside of METRO_BUILD region
 ```
 Usage: metro-build generate [options]
