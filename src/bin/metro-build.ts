@@ -5,9 +5,10 @@ import { program, Option, Command } from 'commander'
 import path from 'path'
 import fs from 'fs'
 import { checkAndGenerateTemplate, getCMakeListsTemplate, getProgramTemplate } from '../template'
-import { IProgram, ProgramTypes, generateCommands } from '../module'
+import { startProgramGeneration } from '../generator'
 import { dispatchContents } from '../cmake'
 import { getPreventInSourceBuildCommand } from '../utility'
+import { IProgram, ProgramTypes } from '../defines'
 
 const LIB_NAME = 'MetroBuild.json'
 
@@ -36,9 +37,6 @@ program
         .addOption(new Option('-S, --source <path>', `Path to ${LIB_NAME}`)
             .default(cwd(), 'Current working directory')
         )
-        .addOption(new Option('-T, --target <target>', 'Target architecture')
-            .default('Win64', 'Windows x64')
-        )
         .action((options) => {
             const libPath = (<string>options.source).endsWith(LIB_NAME) ? <string>options.source : path.join(options.source, LIB_NAME)
             import(libPath)
@@ -49,9 +47,9 @@ program
                         console.log(`No CMakeLists.txt found, generate one: ${cmakePath}`)
                         checkAndGenerateTemplate(cmakePath, getCMakeListsTemplate())
                     }
-                    dispatchContents(cmakePath, generateCommands(program, options.target).join('\n'))
+                    dispatchContents(cmakePath, startProgramGeneration(program).join('\n'))
                 })
         })
     )
-    .version('0.0.1')
+    .version('1.0.0')
     .parse()

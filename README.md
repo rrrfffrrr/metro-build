@@ -30,7 +30,6 @@ Usage: metro-build generate [options]
 
 Options:
   -S, --source <path>    Path to MetroBuild.json (default: Current working directory)
-  -T, --target <target>  Target architecture (default: Windows x64)
   -h, --help             display help for command
 ```
 ```
