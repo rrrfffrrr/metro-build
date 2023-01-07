@@ -49,14 +49,14 @@ export function startProgramGeneration(program: IProgram): string[] {
     return param.result
 }
 
-function generateCommonCommand(input: ICommandGroup, param: GenerateParam, callback: () => any) {
-    param.addIndent()
+function generateCommonCommand(input: ICommandGroup, param: GenerateParam, callback: () => any, indent: number = 1) {
+    param.addIndent(indent)
     if (input.preCommands)
         param.push(...input.preCommands)
     callback()
     if (input.postCommands)
         param.push(...input.postCommands)
-    param.removeIndent()
+    param.removeIndent(indent)
 }
 
 function generateProgram(input: IProgram, param: GenerateParam) {
@@ -76,7 +76,7 @@ function generateProgram(input: IProgram, param: GenerateParam) {
         input.groups.forEach(group => {
             generateSegmentGroup(group, param)
         })
-    })
+    }, 0)
 }
 
 function generateSegmentGroup(input: ISegmentGroup, param: GenerateParam) {
