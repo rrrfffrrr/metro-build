@@ -1,6 +1,10 @@
 # metro-build
 A CMakeLists generator
 
+# Requirement
+ - cmake <3.25 or higher>
+ - nodejs <Not tested>
+
 # Install
 ### Using npm
 `npm install -g metro-build`
