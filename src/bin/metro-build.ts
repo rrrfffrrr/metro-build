@@ -6,7 +6,7 @@ import path from 'path'
 import fs from 'fs'
 import { checkAndGenerateTemplate, getCMakeListsTemplate, getProgramTemplate } from '../template'
 import { startProgramGeneration } from '../generator'
-import { dispatchContents } from '../cmake'
+import { dispatchContents, generateProject, buildProject } from '../cmake'
 import { getPreventInSourceBuildCommand } from '../utility'
 import { IProgram, ProgramTypes } from '../defines'
 import { resolveFiles } from '../glob'
@@ -40,6 +40,10 @@ program
         )
         .addOption(new Option('-R, --recursive', 'Also generating sub-dirs')
         )
+        .addOption(new Option('-G, --generate-project', 'Run cmake -S . -B build')
+        )
+        .addOption(new Option('-B, --build-project', 'Run cmake --build build')
+        )
         .action((options) => {
             const libPath = (<string>options.source).endsWith(LIB_NAME) ? <string>options.source : path.join(options.source, LIB_NAME)
             const files = (options.recursive)
@@ -54,7 +58,19 @@ program
                     }
                     dispatchContents(cmakePath, startProgramGeneration(data).join('\n'))
                 })
-            Promise.all(promise)
+            Promise.all(promise).then(async () => {
+                if (options.generateProject) {
+                    await generateProject('.', 'build')
+                }
+                if (options.buildProject) {
+                    await buildProject('build')
+                }
+            })
+        })
+    )
+    .addCommand(new Command('build')
+        .action(async (options) => {
+            await buildProject('build')
         })
     )
     .version('1.0.0')
