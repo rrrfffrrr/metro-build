@@ -59,6 +59,14 @@ function generateCommonCommand(input: ICommandGroup, param: GenerateParam, callb
     param.removeIndent(indent)
 }
 
+function newScope(param: GenerateParam, callback: () => any, propagate:string[] = [], indent: number = 1) {
+    param.push(`block(${((propagate && propagate.length > 0) ? `PROPAGATE ${propagate.join(' ')}` : '')})`)
+    param.addIndent()
+    callback()
+    param.removeIndent()
+    param.push(`endblock()`)
+}
+
 function generateProgram(input: IProgram, param: GenerateParam) {
     generateCommonCommand(input, param, () => {
         // Create target
@@ -72,10 +80,14 @@ function generateProgram(input: IProgram, param: GenerateParam) {
             default:
                 throw new Error(`Invalid program block type "${input.type}"`)
         }
-    
-        input.groups.forEach(group => {
-            generateSegmentGroup(group, param)
-        })
+        newScope(param, () => {
+            param.push(`set(CURRENT_TARGET ${input.name})`)
+            param.push(`set(LATEST_TARGET ${input.name})`)
+
+            input.groups.forEach(group => {
+                generateSegmentGroup(group, param)
+            })
+        }, ['LATEST_TARGET'])
     }, 0)
 }
 
@@ -94,7 +106,7 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 param.push('# Add source files')
                 param.push(`target_sources(${param.target}`)
                 param.addIndent()
-                param.push(...input.sources.map(v => `PRIVATE \"${v}\"`))
+                param.push(...input.sources.map(v => `PRIVATE \"\${CMAKE_CURRENT_SOURCE_DIR}/${v}\"`))
                 param.removeIndent()
                 param.push(`)`)
                 checkAndGenerateIncludePath(input.includePath, param)
@@ -104,29 +116,37 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 param.push('# Add shared library')
 
                 const ImportConfig = input.importConfig ? `_${input.importConfig}` : ''
-                let sub_target = `${param.target}_SHARED_${param.currentCount.shared}`
+                let sub_target = `${param.target}_SHARED_${param.currentCount.shared++}`
                 param.push(`add_library(${sub_target} SHARED IMPORTED)`)
 
-                checkAndGenerateInterfaceIncludePath(sub_target, input.includePath, param)
-                param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_IMPLIB${ImportConfig} \"${input.sharedLibrary}\")`)
-                param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"${input.staticLibrary}\")`)
-            
-                param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
-                param.currentCount.shared++
+                newScope(param, () => {
+                    param.push(`set(CURRENT_TARGET ${sub_target})`)
+                    param.push(`set(LATEST_TARGET ${sub_target})`)
+        
+                    checkAndGenerateInterfaceIncludePath(sub_target, input.includePath, param)
+                    param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_IMPLIB${ImportConfig} \"\${CMAKE_CURRENT_SOURCE_DIR}/${input.staticLibrary}\")`)
+                    param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"\${CMAKE_CURRENT_SOURCE_DIR}/${input.sharedLibrary}\")`)
+                
+                    param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
+                }, ['LATEST_TARGET'])
                 break
             }
             case "static": {
                 param.push('# Add static library')
 
                 const ImportConfig = input.importConfig ? `_${input.importConfig}` : ''
-                let sub_target = `${param.target}_STATIC_${param.currentCount.static}`
+                let sub_target = `${param.target}_STATIC_${param.currentCount.static++}`
                 param.push(`add_library(${sub_target} STATIC IMPORTED)`)
                 
-                checkAndGenerateInterfaceIncludePath(sub_target, input.includePath, param)
-                param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"${input.staticLibrary}\")`)
-                        
-                param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
-                param.currentCount.static++
+                newScope(param, () => {
+                    param.push(`set(CURRENT_TARGET ${sub_target})`)
+                    param.push(`set(LATEST_TARGET ${sub_target})`)
+
+                    checkAndGenerateInterfaceIncludePath(sub_target, input.includePath, param)
+                    param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"\${CMAKE_CURRENT_SOURCE_DIR}/${input.staticLibrary}\")`)
+                            
+                    param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
+                }, ['LATEST_TARGET'])
                 break
             }
             case "include": {
@@ -145,7 +165,7 @@ function checkAndGenerateIncludePath(input: undefined | string[], param: Generat
         return
     param.push(`target_include_directories(${param.target}`)
     param.addIndent()
-    param.push(...input.map(v => `PUBLIC \"${v}\"`))
+    param.push(...input.map(v => `PUBLIC \"\${CMAKE_CURRENT_SOURCE_DIR}/${v}\"`))
     param.removeIndent()
     param.push(`)`)
 }
@@ -154,7 +174,7 @@ function checkAndGenerateInterfaceIncludePath(target: string, input: undefined |
         return
     param.push(`set_target_properties(${target} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES`)
     param.addIndent()
-    param.push(...input.map((v, i, a) => `\"${v}\"${(a.length > i + 1) ? ';' : '' }`))
+    param.push(...input.map((v, i, a) => `\"\${CMAKE_CURRENT_SOURCE_DIR}/${v}\"${(a.length > i + 1) ? ';' : '' }`))
     param.removeIndent()
     param.push(`)`)
 }
