@@ -68,6 +68,7 @@ function newScope(param: GenerateParam, callback: () => any, propagate:string[] 
 }
 
 function generateProgram(input: IProgram, param: GenerateParam) {
+    param.push(`# <-- ${input.name} -->`)
     generateCommonCommand(input, param, () => {
         // Create target
         switch(input.type) {
@@ -89,6 +90,7 @@ function generateProgram(input: IProgram, param: GenerateParam) {
             })
         }, ['LATEST_TARGET'])
     }, 0)
+    param.push(`# <-- ${input.name} -->`)
 }
 
 function generateSegmentGroup(input: ISegmentGroup, param: GenerateParam) {
@@ -100,10 +102,10 @@ function generateSegmentGroup(input: ISegmentGroup, param: GenerateParam) {
 }
 
 function generateSegment(input: SegmentType, param: GenerateParam) {
+    param.push(`# <-- ${input.type} -->`)
     generateCommonCommand(input, param, () => {
         switch(input.type) {
             case "source": {
-                param.push('# Add source files')
                 param.push(`target_sources(${param.target}`)
                 param.addIndent()
                 param.push(...input.sources.map(v => `PRIVATE \"\${CMAKE_CURRENT_SOURCE_DIR}/${v}\"`))
@@ -113,8 +115,6 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 break
             }
             case "shared": {
-                param.push('# Add shared library')
-
                 const ImportConfig = input.importConfig ? `_${input.importConfig}` : ''
                 let sub_target = `${param.target}_SHARED_${param.currentCount.shared++}`
                 param.push(`add_library(${sub_target} SHARED IMPORTED)`)
@@ -132,8 +132,6 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 break
             }
             case "static": {
-                param.push('# Add static library')
-
                 const ImportConfig = input.importConfig ? `_${input.importConfig}` : ''
                 let sub_target = `${param.target}_STATIC_${param.currentCount.static++}`
                 param.push(`add_library(${sub_target} STATIC IMPORTED)`)
@@ -158,6 +156,7 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 throw new Error(`Unexpected segment type`)
         }
     })
+    param.push(`# <-- ${input.type} -->`)
 }
 
 function checkAndGenerateIncludePath(input: undefined | string[], param: GenerateParam) {
