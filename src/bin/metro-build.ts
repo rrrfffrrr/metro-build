@@ -56,7 +56,7 @@ program
                         console.log(`No CMakeLists.txt found, generate one: ${cmakePath}`)
                         checkAndGenerateTemplate(cmakePath, getCMakeListsTemplate())
                     }
-                    dispatchContents(cmakePath, startProgramGeneration(data).join('\n'))
+                    dispatchContents(cmakePath, ['# AUTO GENERATED', ...startProgramGeneration(data)].join('\n'))
                 })
             Promise.all(promise).then(async () => {
                 if (options.generateProject) {
