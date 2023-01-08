@@ -112,6 +112,7 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"${input.staticLibrary}\")`)
             
                 param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
+                param.currentCount.shared++
                 break
             }
             case "static": {
@@ -125,6 +126,7 @@ function generateSegment(input: SegmentType, param: GenerateParam) {
                 param.push(`set_target_properties(${sub_target} PROPERTIES IMPORTED_LOCATION${ImportConfig} \"${input.staticLibrary}\")`)
                         
                 param.push(`target_link_libraries(${param.target} INTERFACE ${sub_target})`)
+                param.currentCount.static++
                 break
             }
             case "include": {
