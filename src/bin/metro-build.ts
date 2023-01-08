@@ -9,6 +9,7 @@ import { startProgramGeneration } from '../generator'
 import { dispatchContents } from '../cmake'
 import { getPreventInSourceBuildCommand } from '../utility'
 import { IProgram, ProgramTypes } from '../defines'
+import { resolveFiles } from '../glob'
 
 const LIB_NAME = 'MetroBuild.json'
 
@@ -37,18 +38,23 @@ program
         .addOption(new Option('-S, --source <path>', `Path to ${LIB_NAME}`)
             .default(cwd(), 'Current working directory')
         )
+        .addOption(new Option('-R, --recursive', 'Also generating sub-dirs')
+        )
         .action((options) => {
             const libPath = (<string>options.source).endsWith(LIB_NAME) ? <string>options.source : path.join(options.source, LIB_NAME)
-            import(libPath)
-                .then(v => v.default)
-                .then((program: IProgram) => {
-                    const cmakePath = path.join(path.dirname(libPath), 'CMakeLists.txt')
+            const files = (options.recursive)
+                ? resolveFiles(path.join(path.dirname(libPath), '**', LIB_NAME))
+                : [libPath]
+            const promise = files.map(async filePath => {
+                    let data : IProgram = (await import(filePath)).default
+                    const cmakePath = path.join(path.dirname(filePath), 'CMakeLists.txt')
                     if (!fs.existsSync(cmakePath)) {
                         console.log(`No CMakeLists.txt found, generate one: ${cmakePath}`)
                         checkAndGenerateTemplate(cmakePath, getCMakeListsTemplate())
                     }
-                    dispatchContents(cmakePath, startProgramGeneration(program).join('\n'))
+                    dispatchContents(cmakePath, startProgramGeneration(data).join('\n'))
                 })
+            Promise.all(promise)
         })
     )
     .version('1.0.0')
