@@ -1,6 +1,6 @@
 import fs from 'fs'
 import fsPromise from 'fs/promises'
-import { IProgram, ProgramTypes } from "./module"
+import { IProgram, ProgramTypes } from "./defines"
 
 export function checkAndGenerateTemplate(path: string, contents: string) {
     if (fs.existsSync(path)) {
@@ -17,34 +17,42 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
     return {
         name: name,
         type: type,
-        dependencies: [],
-        targets: {
-            Win64: [
-                {
-                    type: 'source',
-                    sources: [ 'src/main.cpp' ],
-                    includePath: [ 'include' ],
-                    preCommands: [ '# This is source target' ]
-                },
-                {
-                    type: 'include',
-                    includePath: [ 'include' ],
-                    preCommands: [ '# This is include only target' ]
-                },
-                {
-                    type: 'static',
-                    includePath: [ 'hello/include' ],
-                    staticLibrary: 'hello/lib/Hello.lib',
-                    preCommands: [ '# This is static library target' ]
-                },
-                {
-                    type: 'shared',
-                    staticLibrary: 'hello/lib/Hello.lib',
-                    sharedLibrary: 'hello/bin/Hello.dll',
-                    preCommands: [ '# This is shared library target' ]
-                }
-            ]
-        },
+        groups: [
+            {
+                segments: [
+                    {
+                        type: 'source',
+                        sources: [ 'src/main.cpp' ],
+                        includePath: [ 'include' ],
+                        preCommands: [ '# This is source target' ]
+                    },
+                    {
+                        type: 'include',
+                        includePath: [ 'include' ],
+                        preCommands: [ '# This is include only target' ]
+                    },
+                    {
+                        type: 'static',
+                        includePath: [ 'hello/include' ],
+                        staticLibrary: 'hello/lib/Hello.lib',
+                        preCommands: [ '# This is static library target' ]
+                    },
+                    {
+                        type: 'shared',
+                        staticLibrary: 'hello/lib/Hello.lib',
+                        sharedLibrary: 'hello/bin/Hello.dll',
+                        preCommands: [ '# This is shared library target' ]
+                    }
+                ],
+                preCommands: [
+                    'if(CMAKE_SIZEOF_VOID_P EQUAL 8)',
+                    '# 64 bits'
+                ],
+                postCommands: [
+                    'endif()'
+                ]
+            }
+        ],
         preCommands: [
             '# pre-commands'
         ],
