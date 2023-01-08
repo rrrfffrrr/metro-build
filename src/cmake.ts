@@ -1,5 +1,6 @@
 import { exec } from "child_process"
 import fs from 'fs/promises'
+import { pathEqual } from 'path-equal'
 
 export interface IExecuteResult {
     stdout: string,
@@ -13,6 +14,8 @@ export async function dispatchContents(cmakePath: string, contents: string) {
 }
 
 export function generateProject(sourcePath: string, buildPath: string) {
+    if (pathEqual(sourcePath, buildPath))
+        throw new Error(`Prevent to generate in-tree build: ${sourcePath} -> ${buildPath}`)
     return new Promise<IExecuteResult>((res, rej) => {
         exec(`cmake -S \"${sourcePath}\" -B \"${buildPath}\"`, (err, stdout, stderr) => {
             if (err) {
