@@ -40,9 +40,9 @@ program
         )
         .addOption(new Option('-R, --recursive', 'Also generating sub-dirs')
         )
-        .addOption(new Option('-G, --generate-project', 'Run cmake -S . -B build')
+        .addOption(new Option('-G, --generate-project', 'Run \"cmake -S . -B build\"')
         )
-        .addOption(new Option('-B, --build-project', 'Run cmake --build build')
+        .addOption(new Option('-B, --build-project', 'Run \"cmake --build build\"')
         )
         .action((options) => {
             const libPath = (<string>options.source).endsWith(LIB_NAME) ? <string>options.source : path.join(options.source, LIB_NAME)
@@ -69,6 +69,7 @@ program
         })
     )
     .addCommand(new Command('build')
+        .description('Run \"cmake --build build\" on current working directory')
         .action(async (options) => {
             await buildProject('build')
         })

@@ -29,8 +29,11 @@ Commands will be pasted inside of METRO_BUILD region
 Usage: metro-build generate [options]
 
 Options:
-  -S, --source <path>    Path to MetroBuild.json (default: Current working directory)
-  -h, --help             display help for command
+  -S, --source <path>     Path to MetroBuild.json (default: Current working directory)
+  -R, --recursive         Also generating sub-dirs
+  -G, --generate-project  Run "cmake -S . -B build"
+  -B, --build-project     Run "cmake --build build"
+  -h, --help              display help for command
 ```
 ```
 <cmake scripts>
@@ -38,4 +41,14 @@ Options:
 <Auto generated contents>
 #endregion METRO_BUILD
 <cmake scripts>
+```
+### build
+Help command to build project
+```
+Usage: metro-build build [options]
+
+Run "cmake --build build" on current working directory
+
+Options:
+  -h, --help  display help for command
 ```
