@@ -5,11 +5,12 @@ import { program, Option, Command } from 'commander'
 import path from 'path'
 import fs from 'fs'
 import { checkAndGenerateTemplate, getCMakeListsTemplate, getProgramTemplate } from '../template'
-import { startProgramGeneration } from '../generator'
+import { parse } from '../generate'
 import { dispatchContents, generateProject, buildProject } from '../cmake'
 import { getPreventInSourceBuildCommand } from '../utility'
 import { IProgram, ProgramTypes } from '../defines'
 import { resolveFiles } from '../glob'
+import Builder from '../generate/builder'
 
 const LIB_NAME = 'MetroBuild.json'
 
@@ -56,7 +57,10 @@ program
                         console.log(`No CMakeLists.txt found, generate one: ${cmakePath}`)
                         checkAndGenerateTemplate(cmakePath, getCMakeListsTemplate())
                     }
-                    dispatchContents(cmakePath, ['# AUTO GENERATED', ...startProgramGeneration(data)].join('\n'))
+                    let rootNode = parse(data)
+                    let builder = new Builder(data.name)
+                    rootNode.build(builder)
+                    dispatchContents(cmakePath, ['# AUTO GENERATED', ...builder.result].join('\n'))
                 })
             Promise.all(promise).then(async () => {
                 if (options.generateProject) {
@@ -74,5 +78,5 @@ program
             await buildProject('build')
         })
     )
-    .version('1.0.0')
+    .version('1.1.0')
     .parse()

@@ -1,6 +1,6 @@
 {
   "name": "cmake-builder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Generate CmakeLists.txt",
   "main": "dist/bin/metro-build.js",
   "author": "",
@@ -10,7 +10,9 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "dev": "ts-node src/bin/metro-build.ts"
+    "dev": "ts-node src/bin/metro-build.ts",
+    "install": "npm install -g .",
+    "uninstall": "npm uninstall -g ."
   },
   "dependencies": {
     "commander": "^9.4.1",
