@@ -43,5 +43,5 @@ export interface IProgramIncludeChunk extends ICommandGroup {
 export type ProgramChunkType = IProgramSourceChunk | IProgramSharedChunk | IProgramStaticChunk | IProgramIncludeChunk
 
 export interface IChunkGroup extends ICommandGroup {
-    segments: ProgramChunkType[]
+    chunks: ProgramChunkType[]
 }

@@ -1,6 +1,6 @@
 {
   "name": "cmake-builder",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Generate CmakeLists.txt",
   "main": "dist/bin/metro-build.js",
   "author": "",

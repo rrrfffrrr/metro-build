@@ -20,13 +20,13 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
         preCommands: [
             '# pre-commands'
         ],
-        groups: [
+        chunkGroups: [
             {
                 preCommands: [
                     'if(CMAKE_SIZEOF_VOID_P EQUAL 8)',
                     '# 64 bits'
                 ],
-                segments: [
+                chunks: [
                     {
                         type: 'source',
                         sources: [ 'src/main.cpp' ],
