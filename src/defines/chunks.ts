@@ -1,6 +1,6 @@
 import { ICommandGroup } from "./command"
 
-export type FileType ='source' | 'build' | 'custom'
+export type FileType ='source' | 'binary' | 'custom'
 export interface IFilePath {
     path: string,
     from: FileType

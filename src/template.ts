@@ -35,13 +35,26 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
                     },
                     {
                         type: 'include',
-                        includePath: [ 'include' ],
+                        includePath: [
+                            {
+                                path: 'include',
+                                from: 'custom'
+                            }
+                        ],
                         preCommands: [ '# This is include only target' ]
                     },
                     {
                         type: 'static',
-                        includePath: [ 'hello/include' ],
-                        staticLibrary: 'hello/lib/Hello.lib',
+                        includePath: [
+                            {
+                                path: 'hello/include',
+                                from: 'binary'
+                            }
+                        ],
+                        staticLibrary: {
+                            path: 'hello/lib/Hello.lib',
+                            from: 'source'
+                        },
                         preCommands: [ '# This is static library target' ]
                     },
                     {

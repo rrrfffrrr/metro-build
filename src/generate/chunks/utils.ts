@@ -9,8 +9,8 @@ export function normalizeFilePath(filePath: FilePath) : IFilePath {
 
 export function parsePath(path: IFilePath): string {
     switch(path.from) {
-        case 'build':
-            return `\"\${CMAKE_CURRENT_BUILD_DIR}/${path.path}\"`
+        case 'binary':
+            return `\"\${CMAKE_CURRENT_BINARY_DIR}/${path.path}\"`
         case 'source':
             return `\"\${CMAKE_CURRENT_SOURCE_DIR}/${path.path}\"`
         case 'custom':
