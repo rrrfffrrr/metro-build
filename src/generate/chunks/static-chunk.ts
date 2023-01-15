@@ -29,8 +29,8 @@ export class StaticChunkNode extends BaseASTNode {
 
     public build(builder: Builder): Builder {
         const ImportConfig = this.importConfig ? `_${this.importConfig}` : ''
-        let sub_target = `${builder.target}_SHARED_${builder.currentCount.shared++}`
-        builder.push(`add_library(${sub_target} SHARED IMPORTED)`)
+        let sub_target = `${builder.target}_STATIC_${builder.currentCount.shared++}`
+        builder.push(`add_library(${sub_target} STATIC IMPORTED)`)
 
         buildBlock(builder, () => {
             builder.push(`set(CURRENT_TARGET ${sub_target})`)
