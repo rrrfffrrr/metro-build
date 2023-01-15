@@ -17,8 +17,15 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
     return {
         name: name,
         type: type,
+        preCommands: [
+            '# pre-commands'
+        ],
         groups: [
             {
+                preCommands: [
+                    'if(CMAKE_SIZEOF_VOID_P EQUAL 8)',
+                    '# 64 bits'
+                ],
                 segments: [
                     {
                         type: 'source',
@@ -44,17 +51,10 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
                         preCommands: [ '# This is shared library target' ]
                     }
                 ],
-                preCommands: [
-                    'if(CMAKE_SIZEOF_VOID_P EQUAL 8)',
-                    '# 64 bits'
-                ],
                 postCommands: [
                     'endif()'
                 ]
             }
-        ],
-        preCommands: [
-            '# pre-commands'
         ],
         postCommands: [
             '# post-commands'
