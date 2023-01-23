@@ -36,7 +36,7 @@ export function buildInclude(builder: Builder, includes: IFilePath[]): Builder {
     
     builder.push(`target_include_directories(${builder.target}`)
     builder.addIndent()
-        builder.push(...includes.map(v => `PUBLIC ${parsePath(v)}`))
+        builder.push(...includes.map(v => `INTERFACE ${parsePath(v)}`))
     builder.removeIndent()
     builder.push(`)`)
     return builder

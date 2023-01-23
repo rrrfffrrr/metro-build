@@ -7,8 +7,10 @@ export interface IExecuteResult {
     stderr: string
 }
 
-export async function dispatchContents(cmakePath: string, contents: string) {
-    let template = await fs.readFile(cmakePath, { encoding: 'utf8' })
+export async function dispatchContents(cmakePath: string, contents: string, template?: string) {
+    if (!template) {
+        template = await fs.readFile(cmakePath, { encoding: 'utf8' })
+    }
     let regex = /(?<=(^|\n)#region\s+METRO_BUILD\s*\n)((.|\n)*)(?=\n#endregion\s+METRO_BUILD\s*($|\n))/g
     return await fs.writeFile(cmakePath, template.replace(regex, contents), { encoding: 'utf8', flag: 'w' })
 }
