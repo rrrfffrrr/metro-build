@@ -6,8 +6,6 @@ A CMakeLists generator
  - nodejs <Not tested>
 
 # Install
-### Using npm
-`npm install -g metro-build`
 ### Using sourcecode
 `git clone https://github.com/rrrfffrrr/metro-build.git`  
 `cd metro-build`  
