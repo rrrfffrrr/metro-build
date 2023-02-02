@@ -4,6 +4,7 @@ import { cwd } from 'process'
 import { program, Option, Command } from 'commander'
 import path from 'path'
 import fs from 'fs'
+import fsAsync from 'fs/promises'
 import { checkAndGenerateTemplate, getCMakeListsTemplate, getProgramTemplate } from '../template'
 import { parse } from '../generate'
 import { dispatchContents, generateProject, buildProject } from '../cmake'
@@ -13,6 +14,7 @@ import { resolveFiles } from '../glob'
 import Builder from '../generate/builder'
 
 const LIB_NAME = 'MetroBuild.json'
+const CMAKE_TEMPLATE_EXTENSION = 'template'
 
 program
     .addCommand(new Command('init')
@@ -31,7 +33,7 @@ program
         .action((options) => {
             const libPath = path.join(<string>options.source, LIB_NAME)
             checkAndGenerateTemplate(libPath, JSON.stringify(getProgramTemplate(options.name, options.type), null, 4))
-            const cmakePath = path.join(<string>options.source, 'CMakeLists.txt')
+            const cmakePath = path.join(<string>options.source, `CMakeLists.txt.${CMAKE_TEMPLATE_EXTENSION}`)
             checkAndGenerateTemplate(cmakePath, `${options.preventInSourceBuild ? [...getPreventInSourceBuildCommand(), '', ''].join('\n') : ''}${getCMakeListsTemplate()}`)
         })
     )
@@ -52,15 +54,16 @@ program
                 : [libPath]
             const promise = files.map(async filePath => {
                     let data : IProgram = (await import(filePath)).default
-                    const cmakePath = path.join(path.dirname(filePath), 'CMakeLists.txt')
-                    if (!fs.existsSync(cmakePath)) {
-                        console.log(`No CMakeLists.txt found, generate one: ${cmakePath}`)
-                        checkAndGenerateTemplate(cmakePath, getCMakeListsTemplate())
+                    const cmakePathSrc = path.join(path.dirname(filePath), `CMakeLists.txt.${CMAKE_TEMPLATE_EXTENSION}`)
+                    if (!fs.existsSync(cmakePathSrc)) {
+                        console.log(`No CMakeLists.txt found, generate one: ${cmakePathSrc}`)
+                        checkAndGenerateTemplate(cmakePathSrc, getCMakeListsTemplate())
                     }
                     let rootNode = parse(data)
                     let builder = new Builder(data.name)
                     rootNode.build(builder)
-                    dispatchContents(cmakePath, ['# AUTO GENERATED', ...builder.result].join('\n'))
+                    const cmakePathDst = path.join(path.dirname(filePath), 'CMakeLists.txt')
+                    dispatchContents(cmakePathDst, ['# AUTO GENERATED', ...builder.result].join('\n'), await fsAsync.readFile(cmakePathSrc, { encoding: 'utf8' }))
                 })
             Promise.all(promise).then(async () => {
                 if (options.generateProject) {
@@ -78,5 +81,5 @@ program
             await buildProject('build')
         })
     )
-    .version('1.1.1')
+    .version('1.1.3')
     .parse()

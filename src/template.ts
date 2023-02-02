@@ -20,13 +20,13 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
         preCommands: [
             '# pre-commands'
         ],
-        groups: [
+        chunkGroups: [
             {
                 preCommands: [
                     'if(CMAKE_SIZEOF_VOID_P EQUAL 8)',
                     '# 64 bits'
                 ],
-                segments: [
+                chunks: [
                     {
                         type: 'source',
                         sources: [ 'src/main.cpp' ],
@@ -35,13 +35,26 @@ export function getProgramTemplate(name: string = 'Hello', type: ProgramTypes = 
                     },
                     {
                         type: 'include',
-                        includePath: [ 'include' ],
+                        includePath: [
+                            {
+                                path: 'include',
+                                from: 'custom'
+                            }
+                        ],
                         preCommands: [ '# This is include only target' ]
                     },
                     {
                         type: 'static',
-                        includePath: [ 'hello/include' ],
-                        staticLibrary: 'hello/lib/Hello.lib',
+                        includePath: [
+                            {
+                                path: 'hello/include',
+                                from: 'binary'
+                            }
+                        ],
+                        staticLibrary: {
+                            path: 'hello/lib/Hello.lib',
+                            from: 'source'
+                        },
                         preCommands: [ '# This is static library target' ]
                     },
                     {

@@ -22,10 +22,10 @@ export class ProgramNode extends BaseASTNode {
     static parse(program: IProgram): BaseASTNode {
         let node = new ProgramNode(program)
         node.chunkGroup = new SequenceNode(
-            program.groups.map(group => 
+            program.chunkGroups.map(group => 
                 CommandGroupNode.parse(
                     group,
-                    new SequenceNode(group.segments.map(
+                    new SequenceNode(group.chunks.map(
                         chunk => parseChunk(chunk)
                     ))
                 )

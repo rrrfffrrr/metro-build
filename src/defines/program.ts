@@ -7,5 +7,5 @@ export interface IProgram extends ICommandGroup {
     type: ProgramTypes
     name: string
 
-    groups: IChunkGroup[]
+    chunkGroups: IChunkGroup[]
 }

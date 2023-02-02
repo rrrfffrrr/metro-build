@@ -1,6 +1,6 @@
 import { ICommandGroup } from "./command"
 
-export type FileType ='source' | 'build' | 'custom'
+export type FileType ='source' | 'binary' | 'custom'
 export interface IFilePath {
     path: string,
     from: FileType
@@ -43,5 +43,5 @@ export interface IProgramIncludeChunk extends ICommandGroup {
 export type ProgramChunkType = IProgramSourceChunk | IProgramSharedChunk | IProgramStaticChunk | IProgramIncludeChunk
 
 export interface IChunkGroup extends ICommandGroup {
-    segments: ProgramChunkType[]
+    chunks: ProgramChunkType[]
 }

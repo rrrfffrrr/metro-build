@@ -1,0 +1,71 @@
+{
+    "name": "Hello",
+    "type": "executable",
+    "preCommands": [
+        "# pre-commands"
+    ],
+    "chunkGroups": [
+        {
+            "preCommands": [
+                "if(CMAKE_SIZEOF_VOID_P EQUAL 8)",
+                "# 64 bits"
+            ],
+            "chunks": [
+                {
+                    "type": "source",
+                    "sources": [
+                        "src/main.cpp"
+                    ],
+                    "includePath": [
+                        "include"
+                    ],
+                    "preCommands": [
+                        "# This is source target"
+                    ]
+                },
+                {
+                    "type": "include",
+                    "includePath": [
+                        {
+                            "path": "include",
+                            "from": "custom"
+                        }
+                    ],
+                    "preCommands": [
+                        "# This is include only target"
+                    ]
+                },
+                {
+                    "type": "static",
+                    "includePath": [
+                        "hello/include"
+                    ],
+                    "staticLibrary":  {
+                        "path": "hello/lib/Hello.lib",
+                        "from": "binary"
+                    },
+                    "preCommands": [
+                        "# This is static library target"
+                    ]
+                },
+                {
+                    "type": "shared",
+                    "staticLibrary": {
+                        "path": "hello/lib/Hello.lib",
+                        "from": "source"
+                    },
+                    "sharedLibrary": "hello/bin/Hello.dll",
+                    "preCommands": [
+                        "# This is shared library target"
+                    ]
+                }
+            ],
+            "postCommands": [
+                "endif()"
+            ]
+        }
+    ],
+    "postCommands": [
+        "# post-commands"
+    ]
+}
